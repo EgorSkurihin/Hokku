@@ -1,0 +1,11 @@
+[server]
+    addr=":1323"
+    loglevel=0
+    session_key="super-secret-session-key"
+
+[database]
+    host="localhost"
+    port=3306
+    user="root"
+    password="232323"
+    dbname="hokku"

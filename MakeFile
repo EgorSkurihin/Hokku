@@ -1,0 +1,25 @@
+.PHONY: mysql adminer migrate mysqltest migrateuptest
+
+mysql:
+	docker run --rm -ti -d -p 3306:3306 --name=mysql01 -e MYSQL_ROOT_PASSWORD=232323 \
+		-e MYSQL_DATABASE=hokku -d mysql
+
+adminer:
+	docker run --rm -ti -d --name adminer-db --link mysql01:db -p 8080:8080 adminer
+
+migrateup:
+	migrate -source file://migrations \
+		-database mysql://root:232323@tcp(localhost:3306)/hokku up
+
+migratedown:
+	migrate -source file://migrations \
+		-database mysql://root:232323@tcp(localhost:3306)/hokku down
+
+
+mysqltest:
+	docker run --rm -ti -d -p 3306:3306 --name=mysql01 -e MYSQL_ROOT_PASSWORD=232323 \
+		-e MYSQL_DATABASE=hokkutest -d mysql
+
+migrateuptest:
+	migrate -source file://migrations \
+		-database mysql://root:232323@tcp(localhost:3306)/hokkutest up

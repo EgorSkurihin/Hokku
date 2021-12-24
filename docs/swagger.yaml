@@ -1,0 +1,523 @@
+basePath: /
+definitions:
+  echo.HTTPError:
+    properties:
+      message: {}
+    type: object
+  models.Hokku:
+    properties:
+      content:
+        type: string
+      created:
+        type: string
+      id:
+        type: integer
+      ownerId:
+        type: integer
+      themeId:
+        type: integer
+      title:
+        type: string
+    type: object
+  models.Theme:
+    properties:
+      id:
+        type: integer
+      title:
+        type: string
+    type: object
+  models.User:
+    properties:
+      created:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      password:
+        type: string
+    type: object
+host: localhost:1323
+info:
+  contact: {}
+  title: Hokku Rest API
+  version: "1.0"
+paths:
+  /health:
+    get:
+      consumes:
+      - '*/*'
+      description: get the status of server.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Show the status of server.
+      tags:
+      - root
+  /hokku/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get hokku by ID
+      parameters:
+      - description: id of hokku
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Hokku'
+        "400":
+          description: Bad request. Hokku ID must be an integer and larger than 0
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "404":
+          description: A hokku with the specified ID was not found
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "500":
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+      summary: Get hokku
+      tags:
+      - Open routes
+  /hokkus:
+    get:
+      consumes:
+      - application/json
+      description: Get all hokkus
+      parameters:
+      - description: Sample size
+        in: query
+        name: limit
+        type: integer
+      - description: Number of items to skip
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Hokku'
+            type: array
+        "400":
+          description: Bad query parameters
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "500":
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+      summary: Get all hokkus
+      tags:
+      - Open routes
+  /hokkus/byAuthor/{authorId}:
+    get:
+      consumes:
+      - application/json
+      description: Get all hokkus of current author
+      parameters:
+      - description: Sample size
+        in: query
+        name: limit
+        type: integer
+      - description: Number of items to skip
+        in: query
+        name: offset
+        type: integer
+      - description: Author id
+        in: path
+        name: authorId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Hokku'
+            type: array
+        "400":
+          description: Bad query parameters
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "500":
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+      summary: Get hokkus by athor
+      tags:
+      - Open routes
+  /hokkus/byTheme/{themeId}:
+    get:
+      consumes:
+      - application/json
+      description: Get all hokkus of current author
+      parameters:
+      - description: Sample size
+        in: query
+        name: limit
+        type: integer
+      - description: Number of items to skip
+        in: query
+        name: offset
+        type: integer
+      - description: thme Id
+        in: path
+        name: themeId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Hokku'
+            type: array
+        "400":
+          description: Bad query parameters
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "500":
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+      summary: Get hokkus by theme
+      tags:
+      - Open routes
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: Login
+      parameters:
+      - description: The user object can only contain email and password
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+        "400":
+          description: Wrong email or passowrd
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "404":
+          description: A user with the specified Email was not found
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "500":
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+      summary: Authenticate
+      tags:
+      - Auth
+  /restricted/hokku:
+    post:
+      consumes:
+      - application/json
+      description: Create new hokku in Store. Reurn location of new object in header
+      parameters:
+      - description: New Hokku
+        in: body
+        name: hokku
+        required: true
+        schema:
+          $ref: '#/definitions/models.Hokku'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+        "400":
+          description: Dont pass validation
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "401":
+          description: The request requires user authentication
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "409":
+          description: Foreign key constraint fails
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "500":
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+      security:
+      - cookieAuth: []
+      summary: Post hokku
+      tags:
+      - Restricted routes
+    put:
+      consumes:
+      - application/json
+      description: Update hokku in store
+      parameters:
+      - description: id of hokku
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Put Hokku
+        in: body
+        name: hokku
+        required: true
+        schema:
+          $ref: '#/definitions/models.Hokku'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: OK
+        "401":
+          description: The request requires user authentication
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "500":
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+      security:
+      - cookieAuth: []
+      summary: Put hokku
+      tags:
+      - Restricted routes
+  /restricted/hokku/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete hokku from Store
+      parameters:
+      - description: id of hokku
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Deleted succesfuly
+        "400":
+          description: Bad request. Hokku ID must be an integer and larger than 0
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "401":
+          description: The request requires user authentication
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "404":
+          description: A hokku with the specified ID was not found
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "500":
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+      security:
+      - cookieAuth: []
+      summary: Delete hokku
+      tags:
+      - Restricted routes
+  /restricted/user:
+    put:
+      consumes:
+      - application/json
+      description: Update user in store
+      parameters:
+      - description: id of user
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Put User
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: OK
+        "401":
+          description: The request requires user authentication
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "404":
+          description: A user with the specified ID was not found
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "500":
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+      security:
+      - cookieAuth: []
+      summary: Put user
+      tags:
+      - Restricted routes
+  /restricted/user/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete user from Store
+      parameters:
+      - description: id of user
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Deleted succesfuly
+        "400":
+          description: Bad request. User ID must be an integer and larger than 0
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "401":
+          description: The request requires user authentication
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "404":
+          description: A user with the specified ID was not found
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "500":
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+      security:
+      - cookieAuth: []
+      summary: Delete user
+      tags:
+      - Restricted routes
+  /themes:
+    get:
+      consumes:
+      - application/json
+      description: Get all themes
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Theme'
+            type: array
+        "500":
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+      summary: Get all themes
+      tags:
+      - Open routes
+  /user:
+    post:
+      consumes:
+      - application/json
+      description: Create new user in Store. Return location of new user in header
+      parameters:
+      - description: New User
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+        "400":
+          description: Dont pass validation
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "409":
+          description: User with this email already exists
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "500":
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+      summary: Post user
+      tags:
+      - Auth
+  /user/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get user by ID
+      parameters:
+      - description: id of user
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+        "400":
+          description: Bad request. User ID must be an integer and larger than 0
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "404":
+          description: A user with the specified ID was not found
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+        "500":
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/echo.HTTPError'
+      summary: Get user
+      tags:
+      - Open routes
+schemes:
+- http
+securityDefinitions:
+  cookieAuth:
+    in: cookie
+    name: session
+    type: apiKey
+swagger: "2.0"
