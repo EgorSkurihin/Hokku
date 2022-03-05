@@ -20,7 +20,5 @@ REST API сервис с использованием языка Golang и фр�
 ## Запуск
 1. `git clone github.com/EgorSkurihin/Hokku`
 1. `cd Hokku`
-1. `go mod download`
-1. `make mysql`
-1. `make migrateup`
-1. `go run .`
+1. `docker-compose up`
+1. Проверить работу сервиса на http://localhost:1323/health

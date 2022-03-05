@@ -1,3 +1,5 @@
+USE hokku;
+
 INSERT INTO `users` (`email`, `name`, `password`, `created`)
 VALUES ('mazuo@gmail.com', 'Мацуо Басё', '123123123', NOW()),
        ('kobayasi@email.com', 'Кобаяси Исса', '234234234', NOW()),
