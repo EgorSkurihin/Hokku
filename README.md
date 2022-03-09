@@ -20,5 +20,7 @@ REST API сервис с использованием языка Golang и фр�
 ## Запуск
 1. `git clone github.com/EgorSkurihin/Hokku`
 1. `cd Hokku`
+1. `docker-compose build`
 1. `docker-compose up`
 1. Проверить работу сервиса на http://localhost:1323/health
+1. Посмотреть Swagger документацию на http://localhost:1323/swagger/index.html
